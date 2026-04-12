@@ -1,2 +1,2 @@
 # PPY
-This repository is dedicated to python school assignments.
+This repository is dedicated to various Python projects and exercises.
