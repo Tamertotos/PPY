@@ -8,7 +8,7 @@ while len(shopping_list) < 4:
     try:
         price = int(input("Please enter its price\n"))
     except ValueError:
-        print("Enter a numerical value")
+        print("Enter a numerical value!")
         continue
 
     shopping_list[name] = price
