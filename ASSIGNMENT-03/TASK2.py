@@ -30,7 +30,7 @@ user2 = input("Enter second user to check: ")
 if user1 in my_list and user2 in my_list:
     print(f"{user1} and {user2} in the list")
 else:
-    print("Either or neither of them exists in the list")
+    print("Either or neither of them exists in the list!")
 
 portion = my_list[1:3]
 print(portion)
