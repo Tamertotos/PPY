@@ -1,33 +1,18 @@
 from turtle import Turtle
 
-MOVE = 20
+MOVE = 30
 
 class Paddle(Turtle):
-
-    def __init__(self,xcor,ycor):
+    def __init__(self,position):
         super().__init__()
-        self.xcor = xcor
-        self.ycor = ycor
         self.shape("square")
         self.color("white")
-        self.shapesize(5,1)
+        self.shapesize(stretch_wid=5,stretch_len=1)
         self.penup()
-        self.goto(xcor, ycor := ycor - 20)
+        self.goto(position)
 
     def up(self):
-        self.ycor += 20
-        self.goto(self.xcor, self.ycor)
+        self.goto(self.xcor(), self.ycor() + MOVE)
 
     def down(self):
-        self.ycor -= 20
-        self.goto(self.xcor, self.ycor)
-
-
-    def up_w(self):
-        self.ycor += 20
-        self.goto(self.xcor, self.ycor)
-
-
-    def down_s(self):
-        self.ycor -= 20
-        self.goto(self.xcor, self.ycor)
+        self.goto(self.xcor(), self.ycor() - MOVE)

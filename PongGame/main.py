@@ -11,6 +11,7 @@ def setup_screen():
     screen = Screen()
     screen.bgcolor("black")
     screen.setup(WIDTH,HEIGHT)
+    screen.title("Pong")
     screen.tracer(0)
     screen.listen()
 
@@ -32,57 +33,43 @@ def draw_line():
             line.penup()
         line.goto(xcor, ycor := ycor - 20)
 
-def game_loop(screen,user1,user2,user1_score,user2_score,ball):
+def game_loop(screen,user1,user2,score,ball):
     while True:
-        user1_score.announce()
-        user2_score.announce()
+        score.announce()
 
 
         ball.move()
-        if abs(ball.ycor()) > 370:
-            ball.dy *= -1
+        if abs(ball.ycor()) > 380:
+            ball.bounce_ycor()
+
+        if ball.distance(user1) < 40 and ball.xcor() > 560 or ball.distance(user2) < 40 and ball.xcor() < -560:
+            ball.bounce_xcor()
 
         if ball.xcor() > 610:
-            user2_score.score +=1
-            ball.goto(0,0)
+            score.l_point()
+            ball.reset()
 
         if ball.xcor() < -610:
-            user1_score.score +=1
-            ball.goto(0,0)
+            score.r_point()
+            ball.reset()
 
-        if  ball.distance(user1) < 40:
-            ball.dx *= -1
-
-        if  ball.distance(user2) < 40:
-            ball.dx *= -1
-
-        if user2_score.score == 3:
-            user2_score.announce_winner()
-            break
-
-        if user1_score.score == 3:
-            user1_score.announce_winner()
-            break
-
-
+        time.sleep(0.01)
         screen.update()
-        time.sleep(0.05)
 
 def main():
     screen = setup_screen()
-    user1 = Paddle(570,80)
-    user2 = Paddle(-570,80)
-    score1 = Score((30,360), "user1")
-    score2 = Score((-30,360) , "user2")
-    ball = Ball(10,10)
+    user1 = Paddle((570,80))
+    user2 = Paddle((-570,80))
+    score = Score()
+    ball = Ball(7,7)
     draw_line()
 
 
     screen.onkeypress(user1.up, "Up")
     screen.onkeypress(user1.down, "Down")
-    screen.onkeypress(user2.up_w, "w")
-    screen.onkeypress(user2.down_s, "s")
-    game_loop(screen,user1,user2,score1,score2,ball)
+    screen.onkeypress(user2.up, "w")
+    screen.onkeypress(user2.down, "s")
+    game_loop(screen,user1,user2,score,ball)
 
     screen.exitonclick()
 
