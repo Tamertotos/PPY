@@ -7,9 +7,6 @@ if __name__ == "__main__":
 
     pomodoro.build_buttons(logic)
 
-    pomodoro.build_canvas()
-
-
-
 
     pomodoro.mainloop()
+
