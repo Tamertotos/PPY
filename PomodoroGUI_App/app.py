@@ -27,10 +27,10 @@ class App(tkinter.Tk):
         self.button2.place(x=600,y=900)
 
     def build_labels(self):
-        self.label1 = tkinter.Label(self,text="WORK TIME",fg="Green",bg="Pink",font=("Arial",35,"bold"),width=10)
+        self.label1 = tkinter.Label(self,text="WORK TIME",fg="Green",bg="Pink",font=("Courier",35,"bold"),width=10)
         self.label1.place(x=370,y=25)
 
-        self.label2 = tkinter.Label(self, text='\N{check mark}',fg="Green",bg="Pink",font=("Arial",20,"bold"))
+        self.label2 = tkinter.Label(self, text='\N{check mark}',fg="Green",bg="Pink",font=("Courier",20,"bold"))
         self.label2.place(x=440,y=900)
 
     def set_timer(self,text):
@@ -51,14 +51,22 @@ class Logic:
         self.text = '\N{check mark}'
         self.minute:int = 25
         self.seconds:int = 0
+        self.reps = 0
         self.state = "work"
+        self.timer_id = None
 
     def reset(self):
+        if self.timer_id is not None:
+            self.pomodoro.after_cancel(self.timer_id)
+
+        self.pomodoro.button1.config(state="normal")
+
         self.minute = 25
         self.seconds = 00
         self.state = "work"
         self.pomodoro.set_background(self.state)
         self.pomodoro.set_timer(f"{self.minute:02d}:{self.seconds:02d}")
+
 
     def start(self):
         def counter():
@@ -72,8 +80,10 @@ class Logic:
             else:
                 self.decrement()
 
-            self.pomodoro.after(1000,counter)
+            self.pomodoro.button1.config(state="disabled")
+            self.timer_id = self.pomodoro.after(1000,counter)
         counter()
+
 
     def decrement(self):
         if self.seconds == 0:
@@ -84,13 +94,21 @@ class Logic:
 
     def change_state(self):
         if self.state == "work":
-            self.minute, self.seconds = 5, 0
+            if self.reps == 4:
+                self.minute,self.seconds = 20,0
+                self.pomodoro.set_label("LONG BREAK")
+            else:
+                self.minute, self.seconds = 5, 0
+                self.pomodoro.set_label("BREAK TIME")
+
             self.state = "break"
-            self.pomodoro.set_label("BREAK TIME")
+
         elif self.state == "break":
             self.minute, self.seconds = 25, 0
+            self.reps += 1
             self.state = "work"
             self.pomodoro.set_label("WORK TIME")
             self.text += '\N{check mark}'
             self.pomodoro.set_label2(self.text)
+
         self.pomodoro.set_background(self.state)
