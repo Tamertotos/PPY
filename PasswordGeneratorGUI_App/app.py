@@ -38,8 +38,7 @@ class App(tkinter.Tk):
         self.entry2 = tkinter.Entry(self, width=40)
         self.entry2.place(x=250, y=350)
 
-        self.entry3 = tkinter.Entry(self, width=25)
-        #,show="*"
+        self.entry3 = tkinter.Entry(self, width=25,show="*")
         self.entry3.place(x=250, y=400)
 
     def build_buttons(self,logic):
@@ -52,6 +51,12 @@ class App(tkinter.Tk):
     def show_error(self):
         mb.showerror("Ooops","Please don't leave any files empty!")
 
+    def dialog_answer(self) -> bool:
+        if mb.askyesno(f"{self.entry1.get()}",f"Email: {self.entry2.get()}\nPassword: {self.entry3.get()}\nIs this okay?"):
+            return True
+        else:
+            mb.showinfo("Cancel","File creation is cancelled")
+
 class Logic:
     def __init__(self,password_app):
         self.password_manager = password_app
@@ -62,14 +67,16 @@ class Logic:
             user = self.password_manager.entry2.get()
             password = self.password_manager.entry3.get()
 
-            with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\my_file", "a") as f:
-                f.write(f"{website} | {user} | {password}\n")
+            if self.password_manager.dialog_answer():
+                with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\my_file.txt", "a") as f:
+                    f.write(f"{website} | {user} | {password}\n")
+
         else:
             self.password_manager.show_error()
 
 
     def check_entries(self) -> bool:
-        return bool(self.password_manager.entry1.get() or self.password_manager.entry2.get() or self.password_manager.entry3.get())
+        return bool(self.password_manager.entry1.get() and self.password_manager.entry2.get() and self.password_manager.entry3.get())
 
     def generate_pass(self):
         self.password_manager.entry3.delete(0,tkinter.END)
