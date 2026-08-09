@@ -5,6 +5,7 @@ from tkinter import messagebox as mb
 import json
 
 PASSWORD =  list(string.ascii_lowercase + string.ascii_uppercase + string.digits + string.punctuation)
+PATH = "C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json"
 
 class App(tkinter.Tk):
     def __init__(self):
@@ -82,31 +83,32 @@ class Logic:
                 }
             }
 
+
+
             if self.password_manager.dialog_answer():
                 self.password_manager.entry3.delete(0, tkinter.END)
                 self.password_manager.entry1.delete(0, tkinter.END)
                 try:
-                    with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json", "r") as f:
+                    with open(PATH, "r") as f:
                         data = json.load(f)
-                except FileNotFoundError:
+                except FileNotFoundError,json.decoder.JSONDecodeError:
                     data = {}
 
                 data.update(new_data)
 
                 try:
-                    with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json", "w") as f:
+                    with open(PATH, "w") as f:
                         json.dump(data, f, indent=4)
                 except FileNotFoundError:
-                    print("Given path could not be found!")
-                else:
-                    print("Success")
+                    self.password_manager.show_error("Given path could not be found!")
+
         else:
             self.password_manager.show_error("Please don't leave the required entry/entries empty!")
 
     def search(self):
         if self.check_first_entry():
             try:
-                with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json", "r") as f:
+                with open(PATH, "r") as f:
                     data = json.load(f)
                     website = self.password_manager.entry1.get()
                     if website in data:
@@ -115,8 +117,8 @@ class Logic:
                         self.password_manager.show_user_pass("NAN","NAN")
             except FileNotFoundError:
                 self.password_manager.show_error("You have to add before searching/Check the file path")
-            else:
-                print("Success")
+        else:
+            self.password_manager.show_error("Please fill the website entry!")
 
     def check_first_entry(self) -> bool:
         return bool(self.password_manager.entry1.get())
