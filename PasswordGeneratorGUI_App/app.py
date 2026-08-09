@@ -2,6 +2,7 @@ import tkinter
 import string
 import secrets
 from tkinter import messagebox as mb
+import json
 
 PASSWORD =  list(string.ascii_lowercase + string.ascii_uppercase + string.digits + string.punctuation)
 
@@ -74,40 +75,48 @@ class Logic:
             website = self.password_manager.entry1.get()
             user = self.password_manager.entry2.get()
             password = self.password_manager.entry3.get()
+            new_data = {
+                website: {
+                    "email/user": user,
+                    "password": password,
+                }
+            }
 
             if self.password_manager.dialog_answer():
                 self.password_manager.entry3.delete(0, tkinter.END)
                 self.password_manager.entry1.delete(0, tkinter.END)
                 try:
-                    with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\my_file.txt", "a") as f:
-                        f.write(f"{website} | {user} | {password}\n")
+                    with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json", "r") as f:
+                        data = json.load(f)
+                except FileNotFoundError:
+                    data = {}
+
+                data.update(new_data)
+
+                try:
+                    with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json", "w") as f:
+                        json.dump(data, f, indent=4)
                 except FileNotFoundError:
                     print("Given path could not be found!")
                 else:
                     print("Success")
-
-
         else:
             self.password_manager.show_error("Please don't leave the required entry/entries empty!")
 
     def search(self):
         if self.check_first_entry():
             try:
-                with open("C:\\Users\\savacc\\OneDrive\\Masaüstü\\my_file.txt") as f:
+                with open("C:\\Users\\savac\\OneDrive\\Masaüstü\\data.json", "r") as f:
+                    data = json.load(f)
                     website = self.password_manager.entry1.get()
-                    file_lines = f.readlines()
-                    for line in file_lines:
-                        parts = [p.strip() for p in line.split('|')]
-                        if website in parts:
-                            self.password_manager.show_user_pass(parts[1],parts[2])
-                            break
+                    if website in data:
+                        self.password_manager.show_user_pass(data[website]["email/user"],data[website]["password"])
                     else:
                         self.password_manager.show_user_pass("NAN","NAN")
             except FileNotFoundError:
                 self.password_manager.show_error("You have to add before searching/Check the file path")
             else:
                 print("Success")
-
 
     def check_first_entry(self) -> bool:
         return bool(self.password_manager.entry1.get())
