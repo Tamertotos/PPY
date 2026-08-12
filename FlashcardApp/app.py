@@ -15,20 +15,59 @@ class App(tkinter.Tk):
             "right" : tkinter.PhotoImage(file="Images/right.png"),
             "wrong" : tkinter.PhotoImage(file="Images/wrong.png")
         }
-        self.build_canvas()
-        self.build_buttons()
 
+        self.build_canvas()
 
     def build_canvas(self):
         self.canvas = tkinter.Canvas(self, width= 800, height=520, bg=BG_COLOR,highlightthickness=0)
-        self.canvas_iamge = self.canvas.create_image(410,270, image=self.image["front"])
+        self.canvas_image = self.canvas.create_image(410,270, image=self.image["front"])
         self.canvas.place(x=100,y=50)
         self.text = self.canvas.create_text(410,120,text="Polish", font=("Arial",40,"italic"))
         self.text2 = self.canvas.create_text(410,300,text="AAAA",font=("Arial",60,"bold"))
 
-    def build_buttons(self):
-        self.button1 = tkinter.Button(self,image=self.image["right"], bg=BG_COLOR,relief="flat")
+    def build_buttons(self,logic):
+        self.button1 = tkinter.Button(self,image=self.image["right"], bg=BG_COLOR,relief="flat", command=logic.correct_button)
         self.button1.place(x=650,y=580)
 
         self.button2 = tkinter.Button(self,image=self.image["wrong"], bg=BG_COLOR,relief="flat")
         self.button2.place(x=250,y=580)
+
+    def change_canvas(self,state,language):
+        self.canvas.itemconfig(self.canvas_image, image=self.image[state])
+        self.canvas.itemconfig(self.text, text=language)
+
+    def change_text(self,word):
+        self.canvas.itemconfig(self.text2, text=word)
+
+
+class Logic:
+    def __init__(self, flashcard_app, words):
+        self.flashcard_app = flashcard_app
+        self.state = "front"
+        self.language = "Polish"
+        self.flashcard_app.canvas.bind('<Button-1>', self.change_canvas)
+        self.words_list = words
+        self.count = 0
+        self.change_words()
+
+    def change_canvas(self,event):
+        if self.state == "front":
+            self.state = "back"
+            self.language = "English"
+            self.flashcard_app.change_text(self.words_list[self.count][1])
+        elif self.state == "back":
+            self.state = "front"
+            self.language = "Polish"
+            self.flashcard_app.change_text(self.words_list[self.count][0])
+        self.flashcard_app.change_canvas(self.state, self.language)
+
+    def change_words(self):
+        self.flashcard_app.change_canvas(self.state, self.language)
+        self.flashcard_app.change_text(self.words_list[self.count][0])
+
+    def correct_button(self):
+        self.count += 1
+        self.state = "front"
+        self.language = "Polish"
+        self.change_words()
+

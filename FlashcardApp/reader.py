@@ -11,5 +11,5 @@ class Reader:
 
 
     def get_languages(self,data_frame):
-        words = {row.Polish: row.English for (index, row) in data_frame.iterrows()}
+        words = data_frame.values.tolist()
         return words
