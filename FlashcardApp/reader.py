@@ -1,15 +1,18 @@
 import pandas as pd
 
-class Reader:
-    def __init__(self,path):
-        try:
-            df = pd.read_csv(path)
-        except FileNotFoundError:
-            print("Given path does not exist")
-        else:
-            self.words = self.get_languages(df)
 
-
-    def get_languages(self,data_frame):
-        words = data_frame.values.tolist()
+def read(path):
+    try:
+        df = pd.read_csv(path)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Given path does not exist {path} ")
+    else:
+        words = get_languages(df)
         return words
+
+def get_languages(data_frame):
+    words = data_frame.values.tolist()
+    return words
+
+    def write_to_csv(self):
+        pass

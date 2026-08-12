@@ -1,4 +1,5 @@
 import tkinter
+import reader
 
 BG_COLOR ="#B1DDC6"
 
@@ -26,10 +27,10 @@ class App(tkinter.Tk):
         self.text2 = self.canvas.create_text(410,300,text="AAAA",font=("Arial",60,"bold"))
 
     def build_buttons(self,logic):
-        self.button1 = tkinter.Button(self,image=self.image["right"], bg=BG_COLOR,relief="flat", command=logic.correct_button)
+        self.button1 = tkinter.Button(self,image=self.image["right"], bg=BG_COLOR,relief="flat", command=logic.next_card)
         self.button1.place(x=650,y=580)
 
-        self.button2 = tkinter.Button(self,image=self.image["wrong"], bg=BG_COLOR,relief="flat")
+        self.button2 = tkinter.Button(self,image=self.image["wrong"], bg=BG_COLOR,relief="flat",command=logic.wrong_button)
         self.button2.place(x=250,y=580)
 
     def change_canvas(self,state,language):
@@ -65,9 +66,20 @@ class Logic:
         self.flashcard_app.change_canvas(self.state, self.language)
         self.flashcard_app.change_text(self.words_list[self.count][0])
 
-    def correct_button(self):
+    def next_card(self):
         self.count += 1
         self.state = "front"
         self.language = "Polish"
         self.change_words()
+
+    def wrong_button(self):
+        reader.write_to_csv()
+
+        with open("words_to_learn.csv", "a", newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(self.words_list[self.count])
+        self.next_card()
+
+
+
 
