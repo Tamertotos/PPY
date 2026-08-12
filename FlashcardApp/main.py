@@ -1,8 +1,8 @@
-import reader
+import csv_utils
 from app import App, Logic
 
 def main():
-    words = reader.read("PolishEnglishTranslation.csv")
+    words = csv_utils.read("PolishEnglishTranslation.csv")
     flashcard_app = App()
     button_logic = Logic(flashcard_app,words)
     flashcard_app.build_buttons(button_logic)

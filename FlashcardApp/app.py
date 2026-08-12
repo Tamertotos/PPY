@@ -1,5 +1,5 @@
 import tkinter
-import reader
+import csv_utils
 
 BG_COLOR ="#B1DDC6"
 
@@ -47,8 +47,15 @@ class Logic:
         self.state = "front"
         self.language = "Polish"
         self.flashcard_app.canvas.bind('<Button-1>', self.change_canvas)
-        self.words_list = words
         self.count = 0
+
+        try:
+            self.words_list = csv_utils.read("Words_to_learn.csv")
+        except FileNotFoundError:
+            self.words_list = words
+
+        print(self.words_list)
+
         self.change_words()
 
     def change_canvas(self,event):
@@ -67,17 +74,17 @@ class Logic:
         self.flashcard_app.change_text(self.words_list[self.count][0])
 
     def next_card(self):
-        self.count += 1
         self.state = "front"
         self.language = "Polish"
+        self.count += 1
+        if self.count > len(self.words_list) - 1:
+            self.flashcard_app.destroy()
+            return
         self.change_words()
+        print(self.count)
 
     def wrong_button(self):
-        reader.write_to_csv()
-
-        with open("words_to_learn.csv", "a", newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(self.words_list[self.count])
+        csv_utils.write_to_csv(self.words_list[self.count])
         self.next_card()
 
 
