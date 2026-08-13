@@ -11,10 +11,10 @@ class App(tkinter.Tk):
         self.minsize(1000,800)
 
         self.image = {
-            "front" : tkinter.PhotoImage(file="Images/card_front.png"),
-            "back" : tkinter.PhotoImage(file="Images/card_back.png"),
-            "right" : tkinter.PhotoImage(file="Images/right.png"),
-            "wrong" : tkinter.PhotoImage(file="Images/wrong.png")
+            "front": tkinter.PhotoImage(file="Images/card_front.png"),
+            "back": tkinter.PhotoImage(file="Images/card_back.png"),
+            "right": tkinter.PhotoImage(file="Images/right.png"),
+            "wrong": tkinter.PhotoImage(file="Images/wrong.png")
         }
 
         self.build_canvas()
@@ -33,34 +33,33 @@ class App(tkinter.Tk):
         self.button2 = tkinter.Button(self,image=self.image["wrong"], bg=BG_COLOR,relief="flat",command=logic.wrong_button)
         self.button2.place(x=250,y=580)
 
-    def change_canvas(self,state,language):
+    def change_front_back(self,state,language):
         self.canvas.itemconfig(self.canvas_image, image=self.image[state])
         self.canvas.itemconfig(self.text, text=language)
 
     def change_text(self,word):
         self.canvas.itemconfig(self.text2, text=word)
 
+    def bind_canvas_click(self,handler):
+        self.canvas.bind('<Button-1>', handler)
 
 class Logic:
     def __init__(self, flashcard_app, words):
         self.flashcard_app = flashcard_app
         self.state = "front"
         self.language = "Polish"
-        self.flashcard_app.canvas.bind('<Button-1>', self.change_canvas)
+        self.flashcard_app.bind_canvas_click(self.change_canvas)
         self.count = 0
         self.words_list = self.load_words(words)
         self.change_words()
 
     def load_words(self,words):
-
         try:
-            result = csv_utils.read("Words_to_learn.csv")
+            result = csv_utils.read(csv_utils.REVIEW_FILE)
         except FileNotFoundError:
             result = words
 
         return result if len(result) > 0 else words
-
-
 
     def change_canvas(self,event):
         if self.state == "front":
@@ -71,10 +70,10 @@ class Logic:
             self.state = "front"
             self.language = "Polish"
             self.flashcard_app.change_text(self.words_list[self.count][0])
-        self.flashcard_app.change_canvas(self.state, self.language)
+        self.flashcard_app.change_front_back(self.state, self.language)
 
     def change_words(self):
-        self.flashcard_app.change_canvas(self.state, self.language)
+        self.flashcard_app.change_front_back(self.state, self.language)
         self.flashcard_app.change_text(self.words_list[self.count][0])
 
     def next_card(self):

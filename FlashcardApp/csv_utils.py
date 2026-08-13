@@ -1,5 +1,6 @@
 import pandas as pd
 
+REVIEW_FILE = "Words_to_learn.csv"
 
 def read(path):
     try:
@@ -13,12 +14,10 @@ def read(path):
 
 def write_to_csv(word_list):
     try:
-        duplicate_words = read("Words_to_learn.csv")
+        duplicate_words = read(REVIEW_FILE)
     except FileNotFoundError:
         duplicate_words = []
 
     if not word_list in duplicate_words:
         df = pd.DataFrame([word_list])
-        df.to_csv("Words_to_learn.csv",mode='a',index=False,header=False)
-    else:
-        return
+        df.to_csv(REVIEW_FILE,mode='a',index=False,header=False)
