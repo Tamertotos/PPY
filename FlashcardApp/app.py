@@ -48,15 +48,19 @@ class Logic:
         self.language = "Polish"
         self.flashcard_app.canvas.bind('<Button-1>', self.change_canvas)
         self.count = 0
+        self.words_list = self.load_words(words)
+        self.change_words()
+
+    def load_words(self,words):
 
         try:
-            self.words_list = csv_utils.read("Words_to_learn.csv")
+            result = csv_utils.read("Words_to_learn.csv")
         except FileNotFoundError:
-            self.words_list = words
+            result = words
 
-        print(self.words_list)
+        return result if len(result) > 0 else words
 
-        self.change_words()
+
 
     def change_canvas(self,event):
         if self.state == "front":
@@ -81,7 +85,6 @@ class Logic:
             self.flashcard_app.destroy()
             return
         self.change_words()
-        print(self.count)
 
     def wrong_button(self):
         csv_utils.write_to_csv(self.words_list[self.count])
