@@ -66,7 +66,8 @@ class Logic:
         try:
             result = csv_utils.read(csv_utils.REVIEW_FILE)
         except FileNotFoundError:
-            result = words
+            self.mode = "Learning"
+            return words
 
         if len(result) > 0:
             self.mode = "Revising"
@@ -121,5 +122,8 @@ class Logic:
         if self.mode == "Learning":
             message = "First pass done!"
         else:
-            message = "All learnt!"
+            if len(self.words_list) == 0:
+                message = "All learnt!"
+            else:
+                message = "Grind more!"
         self.flashcard_app.show_finished(message)
