@@ -24,6 +24,8 @@ def write_to_csv(word_list):
 
 def delete_from_csv(path,word):
     words_in_review_file = read(path)
-    words_in_review_file.remove(word)
-    df = pd.DataFrame(words_in_review_file)
-    df.to_csv(REVIEW_FILE,mode='w', index=False, header=False)
+
+    if word in words_in_review_file:
+        words_in_review_file.remove(word)
+        df = pd.DataFrame(words_in_review_file)
+        df.to_csv(REVIEW_FILE,mode='w', index=False, header=False)

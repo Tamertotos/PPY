@@ -33,15 +33,22 @@ class App(tkinter.Tk):
         self.button2 = tkinter.Button(self,image=self.image["wrong"], bg=BG_COLOR,relief="flat",command=logic.wrong_button)
         self.button2.place(x=250,y=580)
 
-    def change_front_back(self,state,language):
+    def change_front_back(self,state,language,color):
         self.canvas.itemconfig(self.canvas_image, image=self.image[state])
-        self.canvas.itemconfig(self.text, text=language)
+        self.canvas.itemconfig(self.text, text=language, fill=color)
 
-    def change_text(self,word):
-        self.canvas.itemconfig(self.text2, text=word)
+    def change_text(self,word,color):
+        self.canvas.itemconfig(self.text2, text=word,fill=color)
 
     def bind_canvas_click(self,handler):
         self.canvas.bind('<Button-1>', handler)
+
+    def show_finished(self,message):
+        self.canvas.itemconfig(self.text, text="")
+        self.canvas.itemconfig(self.text2, text=message)
+        self.button1["state"] = "disabled"
+        self.button2["state"] = "disabled"
+        self.canvas.unbind('<Button-1>')
 
 class Logic:
     def __init__(self, flashcard_app, words):
@@ -51,6 +58,7 @@ class Logic:
         self.flashcard_app.bind_canvas_click(self.change_canvas)
         self.count:int = 0
         self.mode = "Learning"
+        self.color = "black"
         self.words_list = self.load_words(words)
         self.change_words()
 
@@ -59,7 +67,6 @@ class Logic:
             result = csv_utils.read(csv_utils.REVIEW_FILE)
         except FileNotFoundError:
             result = words
-        print(len(result))
 
         if len(result) > 0:
             self.mode = "Revising"
@@ -72,29 +79,33 @@ class Logic:
         if self.state == "front":
             self.state = "back"
             self.language = "English"
-            self.flashcard_app.change_text(self.words_list[self.count][1])
+            self.color = "white"
+            self.flashcard_app.change_text(self.words_list[self.count][1],self.color)
         elif self.state == "back":
             self.state = "front"
             self.language = "Polish"
-            self.flashcard_app.change_text(self.words_list[self.count][0])
-        self.flashcard_app.change_front_back(self.state, self.language)
+            self.color = "black"
+            self.flashcard_app.change_text(self.words_list[self.count][0], self.color)
+        self.flashcard_app.change_front_back(self.state, self.language,self.color)
 
     def change_words(self):
-        self.flashcard_app.change_front_back(self.state, self.language)
-        self.flashcard_app.change_text(self.words_list[self.count][0])
+        self.flashcard_app.change_front_back(self.state, self.language,"black" )
+        self.flashcard_app.change_text(self.words_list[self.count][0], "black")
 
     def next_card(self):
-        if self.count >= len(self.words_list) - 1:
-            print("ASAAA")
-            return
         self.state = "front"
         self.language = "Polish"
         self.count += 1
-        self.change_words()
 
+
+        if self.count == len(self.words_list):
+            self.finish()
+        else:
+            self.change_words()
 
     def wrong_button(self):
-        csv_utils.write_to_csv(self.words_list[self.count])
+        if self.mode == "Learning":
+            csv_utils.write_to_csv(self.words_list[self.count])
         self.next_card()
 
     def correct_button(self):
@@ -102,6 +113,13 @@ class Logic:
             self.next_card()
         elif self.mode == "Revising":
             csv_utils.delete_from_csv(csv_utils.REVIEW_FILE,self.words_list[self.count])
+            self.words_list.remove(self.words_list[self.count])
+            self.count -= 1
             self.next_card()
 
-
+    def finish(self):
+        if self.mode == "Learning":
+            message = "First pass done!"
+        else:
+            message = "All learnt!"
+        self.flashcard_app.show_finished(message)
