@@ -1,6 +1,7 @@
 import tkinter
 
-FONT = ("Courier",12,"normal")
+FONT = ("Arial",16,"italic")
+THEME_COLOR = "#375362"
 
 class UI(tkinter.Tk):
     def __init__(self,quiz):
@@ -8,7 +9,7 @@ class UI(tkinter.Tk):
         self.quiz = quiz
         self.title("quiz")
         self.minsize(450,600)
-        self.configure(background="blue")
+        self.configure(background=THEME_COLOR)
 
         self.true_image = tkinter.PhotoImage(file="Images/true.png")
         self.false_image = tkinter.PhotoImage(file="Images/false.png")
@@ -23,21 +24,31 @@ class UI(tkinter.Tk):
         self.canvas.place(x=50,y=100)
 
     def build_label(self):
-        self.label1 = tkinter.Label(self,text= f"{self.quiz.score}/{len(self.quiz.questions)}",font=FONT,bg="blue",fg="white")
-        self.label1.place(x=400, y=50)
+        self.label1 = tkinter.Label(self,text= f"Score: {self.quiz.score}/{len(self.quiz.questions)}",font=FONT,bg=THEME_COLOR,fg="white")
+        self.label1.place(x=315, y=50)
 
     def build_buttons(self):
-        self.button1 = tkinter.Button(self, image=self.true_image, command= lambda: self.button_clicked("true"))
-        self.button1.place(x=75,y=450)
+        self.true_button = tkinter.Button(self, image=self.true_image, command= lambda: self.check_answer("true"),highlightthickness=0)
+        self.true_button.place(x=75, y=450)
 
-        self.button2 = tkinter.Button(self, image=self.false_image, command= lambda: self.button_clicked("false"))
-        self.button2.place(x=275,y=450)
+        self.false_button = tkinter.Button(self, image=self.false_image, command= lambda: self.check_answer("false"),highlightthickness=0)
+        self.false_button.place(x=275, y=450)
 
-    def button_clicked(self,state):
+    def change_text(self):
+        self.canvas.configure(bg="beige")
+        self.true_button["state"] = "normal"
+        self.false_button["state"] = "normal"
         if self.quiz.has_next():
-            self.quiz.next_question(state)
+            self.quiz.next_question()
             self.canvas.itemconfig(self.canvas_text, text=self.quiz.questions[self.quiz.current_question_number].text)
-            self.label1.config(text=f"{self.quiz.score}/{len(self.quiz.questions)}")
         else:
-            self.button1["state"] = "disabled"
-            self.button2["state"] = "disabled"
+            self.true_button["state"] = "disabled"
+            self.false_button["state"] = "disabled"
+
+    def check_answer(self,state):
+        color = self.quiz.check_answer(state)
+        self.canvas.configure(bg=color)
+        self.label1.config(text=f"Score: {self.quiz.score}/{len(self.quiz.questions)}")
+        self.true_button["state"] = "disabled"
+        self.false_button["state"] = "disabled"
+        self.after(5000, self.change_text)
