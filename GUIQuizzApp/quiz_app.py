@@ -12,7 +12,7 @@ class Quiz:
 
     def next_question(self):
         q_text = html.unescape(self.questions[self.current_question_number].text)
-        user_answer = input(f"Q.{self.current_question_number} {q_text}. (True/False):").lower()
+        user_answer = input(f"Q.{self.current_question_number+1}: {q_text} (True/False):").lower()
         self.check_answer(user_answer, self.questions[self.current_question_number].answer)
         self.current_question_number += 1
 
