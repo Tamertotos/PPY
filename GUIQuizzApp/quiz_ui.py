@@ -14,6 +14,7 @@ class UI(tkinter.Tk):
         self.false_image = tkinter.PhotoImage(file="Images/false.png")
 
         self.build_canvas()
+        self.build_label()
         self.build_buttons()
 
     def build_canvas(self):
@@ -22,7 +23,8 @@ class UI(tkinter.Tk):
         self.canvas.place(x=50,y=100)
 
     def build_label(self):
-        self.label = tkinter.Label(self,)
+        self.label1 = tkinter.Label(self,text= f"{self.quiz.score}/{len(self.quiz.questions)}",font=FONT,bg="blue",fg="white")
+        self.label1.place(x=400, y=50)
 
     def build_buttons(self):
         self.button1 = tkinter.Button(self, image=self.true_image, command= lambda: self.button_clicked("true"))
@@ -35,3 +37,7 @@ class UI(tkinter.Tk):
         if self.quiz.has_next():
             self.quiz.next_question(state)
             self.canvas.itemconfig(self.canvas_text, text=self.quiz.questions[self.quiz.current_question_number].text)
+            self.label1.config(text=f"{self.quiz.score}/{len(self.quiz.questions)}")
+        else:
+            self.button1["state"] = "disabled"
+            self.button2["state"] = "disabled"
