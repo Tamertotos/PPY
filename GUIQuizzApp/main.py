@@ -7,10 +7,7 @@ question_dictionary = data.get_questions_api("https://opentdb.com/api.php")
 question_bank = [Question(question_dictionary[i]["question"], question_dictionary[i]["correct_answer"])  for i in range(len(question_dictionary))]
 
 quiz = Quiz(question_bank)
-gui_app = UI()
+gui_app = UI(quiz)
 gui_app.mainloop()
 
-
-while quiz.has_next():
-    quiz.next_question()
 
