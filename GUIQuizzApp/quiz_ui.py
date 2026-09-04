@@ -35,15 +35,13 @@ class UI(tkinter.Tk):
         self.false_button.place(x=275, y=450)
 
     def change_text(self):
-        self.canvas.configure(bg="beige")
-        self.true_button["state"] = "normal"
-        self.false_button["state"] = "normal"
         if self.quiz.has_next():
+            self.canvas.configure(bg="beige")
+            self.true_button["state"] = "normal"
+            self.false_button["state"] = "normal"
             self.quiz.next_question()
             self.canvas.itemconfig(self.canvas_text, text=self.quiz.questions[self.quiz.current_question_number].text)
-        else:
-            self.true_button["state"] = "disabled"
-            self.false_button["state"] = "disabled"
+
 
     def check_answer(self,state):
         color = self.quiz.check_answer(state)
